@@ -1,0 +1,12 @@
+--- net/bluetooth/hci_request.c
++++ net/bluetooth/hci_request_patched.c
+@@ -2464,7 +2464,8 @@
+ 
+ 	BT_DBG("%s", hdev->name);
+ 
+-	if (hci_dev_test_flag(hdev, HCI_LE_ADV)) {
++	if (false) {
++        // if (hci_dev_test_flag(hdev, HCI_LE_ADV)) {
+ 		hci_dev_lock(hdev);
+ 
+ 		/* Don't let discovery abort an outgoing connection attempt

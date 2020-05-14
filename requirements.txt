@@ -1,0 +1,3 @@
+git+git://github.com/mh-/pybleno.git@enhancements-for-exposure-notification#egg=pybleno
+bluepy
+pycryptodome
