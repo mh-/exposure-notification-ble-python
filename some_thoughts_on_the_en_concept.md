@@ -21,12 +21,22 @@ better if all devices changed their RPI and BDADDR synchronously; but to roll ou
 with existing BLE stacks. I'd rather have this system activated very soon through a Play Services update, than to wait 
 for all device manufacturers. 
 
-In summary, I think that this concept offers the best possible trade-off regarding privacy in the current situation.
+In summary, I think that this concept offers a very good trade-off regarding privacy in the current situation.
 
-Cryptography
-------------
+The recently published [open source reference implementation of an Exposure Notifications 
+server](https://github.com/google/exposure-notifications-server) includes the use of a "device attestation API", 
+such as the [SafetyNet Attestation API](https://developer.android.com/training/safetynet/attestation). 
+The purpose is to validate TEKs, i.e. prevent hacked devices from reporting fake TEKs as Diagnosis Keys. 
+The [SafetyNet ToS](https://developer.android.com/training/safetynet/attestation#safetynet-tos) state that this 
+"works by collecting hardware and software information, such as device and application data (...), 
+and sending that data to Google for analysis". I think that's fine in general, but an actual COVID-19- warning app 
+should _not_ invoke this API _only_ when a user has been infected, but independent of this - so that the device data
+cannot be linked to this sensitive information.
 
-I believe the cryptography v1.2 will properly protect the users' privacy. 
+Cryptography on BLE
+-------------------
+
+I believe the cryptography concept v1.2 will properly protect the users' privacy. 
 
 Evolved from v1.0, it still contains key derivation, although this doesn't really seem to be necessary anymore. 
 There doesn't seem to be a use case where a user would be willing to release their RPI key, but not their AEM key, 
