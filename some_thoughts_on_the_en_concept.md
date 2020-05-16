@@ -30,7 +30,7 @@ The purpose is to validate TEKs, i.e. prevent hacked devices from reporting fake
 The [SafetyNet ToS](https://developer.android.com/training/safetynet/attestation#safetynet-tos) state that this 
 "works by collecting hardware and software information, such as device and application data (...), 
 and sending that data to Google for analysis". I think that's fine in general, but an actual COVID-19- warning app 
-should _not_ invoke this API _only_ when a user has been infected, but independent of this - so that the device data
+should _not_ invoke this API _only_ when a user has been infected, but independently of this - so that the device data
 cannot be linked to this sensitive information.
 
 Cryptography on BLE
