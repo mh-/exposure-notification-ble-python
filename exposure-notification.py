@@ -16,8 +16,8 @@ https://blog.google/inside-google/company-announcements/apple-and-google-partner
 https://blog.google/documents/70/Exposure_Notification_-_Bluetooth_Specification_v1.2.2.pdf
 https://blog.google/documents/69/Exposure_Notification_-_Cryptography_Specification_v1.2.1.pdf
 
-Transmission is handled in en_tx_service.py.
-Scanning is handled in en_rx_service.py.
+Transmission is handled in en_tx_service.py. Storing the TEKs is handled in en_tx_data_store.py.
+Scanning is handled in en_rx_service.py. Storing the received beacons is handled in en_rx_data_store.py.
 Cryptography is handled in en_crypto.py.
 '''
 
@@ -31,12 +31,16 @@ try:
     parser.add_argument("-t", "--triggertx",
                         help="trigger TX again after RX, if the Linux kernel wasn't patched to allow both in parallel",
                         action="store_true")
+    parser.add_argument("-r", "--storerawdata",
+                        help="store raw RX data every 2 seconds",
+                        action="store_true")
     parser.add_argument("-c", "--cycletime", type=int, default=5*60,
                         help="duration (in seconds) of one cycle")
     parser.add_argument("-s", "--scantime", type=int, default=2,
                         help="duration (in seconds) of the scanning within one cycle")
     args = parser.parse_args()
     trigger_tx = args.triggertx
+    store_raw_rx_data = args.storerawdata
     total_scan_time_seconds = args.scantime
     total_cycle_time_seconds = max(args.cycletime, total_scan_time_seconds)
 
@@ -52,7 +56,7 @@ try:
            num_scan_intervals * one_scan_interval_seconds))
 
     tx_data_store = ENTxDataStore("tek_data.csv")
-    rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds)
+    rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data)
 
     crypto = ENCrypto(interval_length_minutes=10, tek_rolling_period=144)
 

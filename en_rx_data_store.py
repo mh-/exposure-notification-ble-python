@@ -1,14 +1,17 @@
 class ENRxDataStore:
-    def __init__(self, rx_raw_data_file_name, rx_processed_data_filename, filter_time_seconds):
-        self.rx_raw_data_file = open(rx_raw_data_file_name, 'a')
-        self.rx_raw_data_file.write("Time;RPI;AEM;RSSI;BDADDR\n")
+    def __init__(self, rx_raw_data_file_name, rx_processed_data_filename, filter_time_seconds, store_raw_data):
+        self.store_raw_data = store_raw_data
+        if self.store_raw_data:
+            self.rx_raw_data_file = open(rx_raw_data_file_name, 'a')
+            self.rx_raw_data_file.write("Time;RPI;AEM;RSSI;BDADDR\n")
         self.rx_data_file = open(rx_processed_data_filename, 'a')
         self.rx_data_file.write("StartTime;EndTime;RPI;AEM;MaxRSSI;BDADDR\n")
         self.rx_dict = dict()
         self.filter_time_seconds = filter_time_seconds
 
     def __del__(self):
-        self.rx_raw_data_file.close()
+        if self.store_raw_data:
+            self.rx_raw_data_file.close()
         for key in self.rx_dict:
             beacon_values = self.rx_dict[key]
             self.rx_data_file.write("%d;%d;%s;%s;%d;%s\n" %
@@ -39,10 +42,9 @@ class ENRxDataStore:
             print("\nBLE RX: Beacon was received for %d seconds: RPI: %s, AEM: %s, max. RSSI: %d, BDADDR: %s" %
                   (beacon_values[4]-beacon_values[3], key.hex(), beacon_values[0].hex(), beacon_values[1],
                    beacon_values[2]))
-        self.rx_data_file.flush()
 
     def write(self, beacon, current_timestamp):
-        self.rx_raw_data_file.write("%d;%s;%s;%d;%s\n" %
-                               (current_timestamp, beacon.rpi.hex(), beacon.aem.hex(), beacon.rssi, beacon.bdaddr))
-        self.rx_raw_data_file.flush()
+        if self.store_raw_data:
+            self.rx_raw_data_file.write("%d;%s;%s;%d;%s\n" %
+                                   (current_timestamp, beacon.rpi.hex(), beacon.aem.hex(), beacon.rssi, beacon.bdaddr))
         self.consider_in_rx_list(beacon, current_timestamp)

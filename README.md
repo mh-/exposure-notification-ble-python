@@ -52,10 +52,11 @@ Usage Example
     BLE RX: Beacon was received for 20 seconds: RPI: 8c3f2c091ad2f7c5da409a3171b96f6f, AEM: 11c15a1b, max. RSSI: -44, BDADDR: 0c:33:79:93:2c:1a (random)
     ....
     
-The script will create (or append to) three files:
+The script will create (or append to) these files:
 
 - `tek_data.csv` contains the daily Temporary Encryption Keys (TEK) that are used for sending beacons.
-- `rx_raw_data.csv` contains all the received beacons with timestamp, RSSI and the BDADDR of the sender.
+- `rx_raw_data.csv` contains all the received beacons with timestamp, RSSI and the BDADDR of the sender. 
+(Only with option `-r` / `--storerawdata`.)
 - `rx_data.csv` contains preprocessed data about the received beacons, incl. their max. RSSI. 
   An entry is generated when a beacon with a specific RPI hasn't been seen anymore for a certain time, which depends 
   on the selected cycle time.
@@ -114,6 +115,10 @@ You can set the duration of a cycle, and the duration of scanning within a cycle
                             duration (in seconds) of the scanning within one cycle
  
 The script will always scan in steps of 2 seconds.
+
+You can choose to have a raw RX data file created (`rx_raw_data.csv`) with option `-r` / `--storerawdata`:
+
+    $ python3 exposure-notification.py --storerawdata
 
 If you do not specify options, the script will use these durations:
 
