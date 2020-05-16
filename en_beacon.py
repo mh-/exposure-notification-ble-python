@@ -94,27 +94,33 @@ parser.add_argument("bdaddr_string", metavar="BDADDR", help="the random BDADDR (
 
 args = parser.parse_args()
 
-_rpi = bytes.fromhex(args.rpi_string)
-if len(_rpi) != 16:
-    print("ERROR: RPI must be exactly 16 bytes!")
-    sys.exit(2)
-_aem = bytes.fromhex(args.aem_string)
-if len(_aem) != 4:
-    print("ERROR: AEM must be exactly 4 bytes!")
-    sys.exit(2)
-_bdaddr = bytes.fromhex(args.bdaddr_string)
-if len(_bdaddr) != 6:
-    print("ERROR: BDADDR must be exactly 6 bytes!")
-    sys.exit(2)
+try:
+    _rpi = bytes.fromhex(args.rpi_string)
+    if len(_rpi) != 16:
+        raise ValueError
+except ValueError:
+    parser.error("ERROR: RPI must be exactly 16 bytes!")
+try:
+    _aem = bytes.fromhex(args.aem_string)
+    if len(_aem) != 4:
+        raise ValueError
+except ValueError:
+    parser.error("ERROR: AEM must be exactly 4 bytes!")
+try:
+    _bdaddr = bytes.fromhex(args.bdaddr_string)
+    if len(_bdaddr) != 6:
+        raise ValueError
+except ValueError:
+    parser.error("ERROR: BDADDR must be exactly 6 bytes!")
+# noinspection PyUnboundLocalVariable
 if (_bdaddr[0] & 0b11000000) != 0:
-    print("ERROR: The two MSBs of BDADDR must be 0, because we need a Non-Resolvable Private Address!")
+    parser.error("ERROR: The two MSBs of BDADDR must be 0, because we need a Non-Resolvable Private Address!")
     # Note: If the two MSBs are 0b10 (undefined address type), iOS will discard the advertisement!
-    sys.exit(2)
 if (_bdaddr.hex() == "000000000000") or (_bdaddr.hex() == "3fffffffffff"):
-    print("ERROR: BDADDR must not be all 0 or all 1!")
-    sys.exit(2)
+    parser.error("ERROR: BDADDR must not be all 0 or all 1!")
 
 print("BLE TX: RPI: %s, AEM: %s, BDADDR: %s" % (args.rpi_string, args.aem_string, args.bdaddr_string))
+# noinspection PyUnboundLocalVariable
 beacon = ENBeacon(rpi=_rpi, aem=_aem, bdaddr=_bdaddr)
 time.sleep(0.2)
 sys.exit(0)
