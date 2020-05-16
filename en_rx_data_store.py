@@ -1,10 +1,11 @@
 class ENRxDataStore:
-    def __init__(self, rx_raw_data_file_name, rx_processed_data_filename):
+    def __init__(self, rx_raw_data_file_name, rx_processed_data_filename, filter_time_seconds):
         self.rx_raw_data_file = open(rx_raw_data_file_name, 'a')
         self.rx_raw_data_file.write("Time;RPI;AEM;RSSI;BDADDR\n")
         self.rx_data_file = open(rx_processed_data_filename, 'a')
         self.rx_data_file.write("StartTime;EndTime;RPI;AEM;MaxRSSI;BDADDR\n")
         self.rx_dict = dict()
+        self.filter_time_seconds = filter_time_seconds
 
     def __del__(self):
         self.rx_raw_data_file.close()
@@ -28,7 +29,8 @@ class ENRxDataStore:
             self.rx_dict[beacon.rpi] = [beacon.aem, beacon.rssi, beacon.bdaddr, timestamp, timestamp]
 
     def filter_rx_list(self, current_timestamp):
-        old_beacon_keys = [key for (key, value) in self.rx_dict.items() if current_timestamp - value[4] >= 10]
+        old_beacon_keys = [key for (key, value) in self.rx_dict.items()
+                           if current_timestamp - value[4] >= self.filter_time_seconds]
         for key in old_beacon_keys:
             beacon_values = self.rx_dict.pop(key)
             self.rx_data_file.write("%d;%d;%s;%s;%d;%s\n" %

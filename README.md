@@ -18,32 +18,47 @@ I wrote down a few thoughts about the concept [here](some_thoughts_on_the_en_con
 Usage Example
 -------------
 
-    $ python3 exposure-notification.py 
+    $ python3 exposure-notification.py -c 10 -s 2
     Exposure Notification BLE Simulator
     This script simulates an 'Exposure Notification V1.2'-enabled device.
-
+    
+    Full cycle duration: 10s, thereof scanning duration: 2s
+    
     TX: TEK should roll...
-    CRYPTO: Rolled TEK at i: 2648880 (hex 306b2800). New TEK: 356cb7fb1ed9afdcaeefdfa9474731cd
-    CRYPTO: RPIK: 131cc76f0f1fd7853fb7e0919fac9532
-    CRYPTO: AEMK: 3a2056a3fd035ef9d6d6d54a710d3615
-
+    CRYPTO: Rolled TEK at i: 2649312 (hex e06c2800). New TEK: 7921b817fdb92074df5345594273756f
+    CRYPTO: RPIK: eae8956644770f952871daf549c0ce7e
+    CRYPTO: AEMK: a1d0bd6f94b053cf622ca88194e20611
+    
     TX: BDADDR should roll...
-    CRYPTO: padded data: 454e2d525049000000000000a76b2800 --> RPI: 67aa5eb96013169068e93fecee4d9bdf
-    CRYPTO: metadata: 400c0000 --> AEM: 23369a81
-    BLE TX: RPI: 67aa5eb96013169068e93fecee4d9bdf, AEM: 23369a81, BDADDR: 35f70bb24fd5
+    CRYPTO: padded data: 454e2d5250490000000000005b6d2800 --> RPI: 5811408cf8d88d2b33f73773a7c6d45f
+    CRYPTO: metadata: 400c0000 --> AEM: a3e9517f
+    BLE TX: RPI: 5811408cf8d88d2b33f73773a7c6d45f, AEM: a3e9517f, BDADDR: 3e9a0a0c3d4b
     BLE TX: Read Advertising Channel TX Power Level: 12 dBm
     BLE TX: Power is on, now starting to advertise...
     BLE TX: OK, we are advertising.
+    ........
+    BLE RX: Now scanning...
+    ........
+    BLE RX: Now scanning...
+    ........
+    BLE RX: Now scanning...
+    ........
+    BLE RX: Now scanning...
+    ........
+    BLE RX: Now scanning...
+    ........
+    BLE RX: Now scanning...
+    
+    BLE RX: Beacon was received for 20 seconds: RPI: 8c3f2c091ad2f7c5da409a3171b96f6f, AEM: 11c15a1b, max. RSSI: -44, BDADDR: 0c:33:79:93:2c:1a (random)
     ....
-    BLE RX: Beacon was received for 8 seconds: RPI: 7c0903b1a589d5251e19cebcba563e4c, AEM: dffea144, max. RSSI: -24, BDADDR: 14:ec:df:db:4c:b4 (random)
-    ..........
     
 The script will create (or append to) three files:
 
 - `tek_data.csv` contains the daily Temporary Encryption Keys (TEK) that are used for sending beacons.
 - `rx_raw_data.csv` contains all the received beacons with timestamp, RSSI and the BDADDR of the sender.
 - `rx_data.csv` contains preprocessed data about the received beacons, incl. their max. RSSI. 
-  An entry is generated when a beacon with a specific RPI hasn't been seen anymore for 10 seconds.
+  An entry is generated when a beacon with a specific RPI hasn't been seen anymore for a certain time, which depends 
+  on the selected cycle time.
 
 Hardware Requirements
 ---------------------
@@ -86,10 +101,23 @@ without special options:
 
     $ python3 exposure-notification.py
     
-Otherwise, use 
+With the original Linux kernel, advertising the beacon (TX) is disabled by scanning (RX), 
+and you need use the --triggertx option:
 
-    $ python3 exposure-notification.py --toggle
+    $ python3 exposure-notification.py --triggertx
+    
+You can set the duration of a cycle, and the duration of scanning within a cycle, with these options:
+
+      -c CYCLETIME, --cycletime CYCLETIME
+                            duration (in seconds) of one cycle
+      -s SCANTIME, --scantime SCANTIME
+                            duration (in seconds) of the scanning within one cycle
  
+The script will always scan in steps of 2 seconds.
+
+If you do not specify options, the script will use these durations:
+
+    $ python3 exposure-notification.py -c 300 -s 2
 
 Limitations
 -----------
