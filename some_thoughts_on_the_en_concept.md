@@ -44,9 +44,10 @@ as the AEM key currently only protects the TX power, and this is absolutely requ
 One single AES key would be sufficient for the encryption of both ENIntervalNumber and the metadata.
 
 I could maybe envision a setup where the TX power is instead XORed into one of the RPI byte (which still keeps the 
-false-positive probability reasonably low), and use the AEM for a longer-term user identifier. This might help users to 
-better understand their exposure risk, but some infected users might not be willing to disclose that identifier, 
-and in this context key derivation could be useful. But this would require only one key derivation, not two.
+false-positive probability reasonably low), and use the AEM for a longer-term user identifier, which might help users to 
+better understand their exposure risk. Or the AEM could be used for some other type of data, that some infected users 
+might - and some others might not - be willing to disclose, and in this context key derivation could be useful. 
+But this would require only one key derivation, not two.
 
 Anyway, I believe that the overall security of the concept is strong and adequate.
 
@@ -60,7 +61,8 @@ measurements. I don't think it will be possible to distinguish between two peopl
 two people sitting in adjacent rooms.
 
 The best strategy will probably be a frequent scanning, and using the maximum of the RSSI values, hoping that movement of
-the devices will yield an optimal transmission at least once.
+the devices will yield an optimal transmission at least once. However, this needs to be balanced with battery power 
+consumption.
 
 Again, this is a trade-off; even though having UWB support in all devices would make this a lot more accurate, 
 I'd rather not wait for that.
