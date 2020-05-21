@@ -4,8 +4,10 @@ from en_tx_data_store import *
 from en_rx_service import *
 from en_rx_data_store import *
 from en_crypto import *
+from gps_service import *
 import time
 import argparse
+import os
 
 
 '''
@@ -32,7 +34,13 @@ try:
                         help="trigger TX again after RX, if the Linux kernel wasn't patched to allow both in parallel",
                         action="store_true")
     parser.add_argument("-r", "--storerawdata",
-                        help="store raw RX data every 2 seconds",
+                        help="store raw RX data after every scan",
+                        action="store_true")
+    parser.add_argument("-d", "--gpsdatetime",
+                        help="set date and time from GPS",
+                        action="store_true")
+    parser.add_argument("-g", "--gpsposition",
+                        help="store GPS position with RX data",
                         action="store_true")
     parser.add_argument("-c", "--cycletime", type=int, default=5*60,
                         help="duration (in seconds) of one cycle")
@@ -41,11 +49,25 @@ try:
     args = parser.parse_args()
     trigger_tx = args.triggertx
     store_raw_rx_data = args.storerawdata
+    use_gps_date_time = args.gpsdatetime
+    use_gps_position = args.gpsposition
     total_scan_time_seconds = args.scantime
     total_cycle_time_seconds = max(args.cycletime, total_scan_time_seconds)
 
     print("Exposure Notification BLE Simulator")
     print("This script simulates an 'Exposure Notification V1.2'-enabled device.")
+
+    gps_handler = None
+    if use_gps_date_time or use_gps_position:
+        gps_handler = GpsMessageHandler()
+
+    if use_gps_date_time:
+        print("Waiting for time from GPS...")
+        date_time = gps_handler.get_date_time()
+        while not date_time:
+            time.sleep(0.5)
+            date_time = gps_handler.get_date_time()
+        os.system("sudo date -s %s" % date_time)
 
     one_scan_interval_seconds = 2
     num_scan_intervals = -(-total_scan_time_seconds // one_scan_interval_seconds)  # ceil division
@@ -56,7 +78,8 @@ try:
            num_scan_intervals * one_scan_interval_seconds))
 
     tx_data_store = ENTxDataStore("tek_data.csv")
-    rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data)
+    rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
+                                  use_gps_position)
 
     crypto = ENCrypto(interval_length_minutes=10, tek_rolling_period=144)
 
@@ -88,12 +111,18 @@ try:
 
         print("\nBLE RX: Now scanning...")
 
+        gps_lat = gps_lon = gps_altitude = gps_speed = None
+        if use_gps_position:
+            gps_lat, gps_lon, gps_altitude = gps_handler.get_pos()
+            gps_speed = gps_handler.get_speed()
+
         timestamp = get_current_unix_epoch_time_seconds()
         for _ in range(num_scan_intervals):
             timestamp = get_current_unix_epoch_time_seconds()
             scan_result = rx_service.scan(t=one_scan_interval_seconds)
             for beacon in scan_result:
-                rx_data_store.write(beacon, timestamp)
+                rx_data_store.write(beacon, timestamp,
+                                    gps_lat=gps_lat, gps_lon=gps_lon, gps_altitude=gps_altitude, gps_speed=gps_speed)
         rx_data_store.filter_rx_list(timestamp)
 
 except KeyboardInterrupt:
