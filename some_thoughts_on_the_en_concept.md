@@ -33,6 +33,12 @@ and sending that data to Google for analysis". I think that's fine in general, b
 should _not_ invoke this API _only_ when a user has been infected, but independently of this - so that the device data
 cannot be linked to this sensitive information.
 
+Another [concern](https://github.com/corona-warn-app/cwa-documentation/issues/76#issuecomment-629996392) would be that 
+third party apps or services could use BLE scanning to do the same as an official COVID-19 warning app - even on devices
+where that warning app is not installed -  and could thus make the same estimations about the user's exposure status (using 
+Diagnosis Keys downloaded from official sources). Therefore it would be better if Android filtered out 0xFD6F beacons from 
+"normal" BLE scanning responses, unless the user specifically allows this.
+
 Cryptography on BLE
 -------------------
 
