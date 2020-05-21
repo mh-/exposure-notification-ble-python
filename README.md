@@ -90,13 +90,16 @@ Installation and Running the Script
     $ git clone https://github.com/mh-/exposure-notification-ble-python
     $ cd exposure-notification-ble-python
     
+    $ # Install GPS support, incl. Python library
+    $ sudo apt install gpsd gpsd-clients
+
     $ pip3 install -r requirements.txt
     
     $ # Give Bluetooth access to pybleno --> Python3.7 
     $ sudo setcap 'cap_net_raw,cap_net_admin+eip' /usr/bin/python3.7
     $ # Give Bluetooth access to bluepy --> bluepy-helper 
     $ sudo setcap 'cap_net_raw,cap_net_admin+eip' /home/pi/.local/lib/python3.7/site-packages/bluepy/bluepy-helper
-    
+        
 If you modify the Linux kernel, as explained [here](linux-kernel-patching.md), you can run the script 
 without special options:
 
@@ -114,15 +117,21 @@ You can set the duration of a cycle, and the duration of scanning within a cycle
       -s SCANTIME, --scantime SCANTIME
                             duration (in seconds) of the scanning within one cycle
  
+If you do not specify options, the script will use these durations:
+
+    $ python3 exposure-notification.py -c 300 -s 2
+
 The script will always scan in steps of 2 seconds.
 
 You can choose to have a raw RX data file created (`rx_raw_data.csv`) with option `-r` / `--storerawdata`:
 
     $ python3 exposure-notification.py --storerawdata
+    
+If you have a GPS connected to the Raspberry Pi which is supported by gpsd, you can use these option:
 
-If you do not specify options, the script will use these durations:
+      -d, --gpsdatetime     set date and time from GPS
+      -g, --gpsposition     store GPS position with RX data
 
-    $ python3 exposure-notification.py -c 300 -s 2
 
 Limitations
 -----------
