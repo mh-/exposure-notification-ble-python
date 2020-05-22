@@ -45,7 +45,6 @@ class ENRxDataStore:
                 self.rx_dict[beacon.rpi] = [beacon.aem, beacon.rssi, beacon.bdaddr, timestamp, timestamp,
                                             gps_lat, gps_lon, gps_altitude, gps_speed]
 
-
     def filter_rx_list(self, current_timestamp):
         old_beacon_keys = [key for (key, value) in self.rx_dict.items()
                            if current_timestamp - value[4] >= self.filter_time_seconds]
@@ -61,6 +60,7 @@ class ENRxDataStore:
             self.rx_data_file.write(";%s;%s;%s;%s" %
                                     (beacon_values[5], beacon_values[6], beacon_values[7], beacon_values[8]))
         self.rx_data_file.write("\n")
+        self.rx_data_file.flush()
         print("BLE RX: Beacon was received for %d seconds: RPI: %s, AEM: %s, max. RSSI: %d, BDADDR: %s" %
               (beacon_values[4] - beacon_values[3], key.hex(), beacon_values[0].hex(), beacon_values[1],
                beacon_values[2]))

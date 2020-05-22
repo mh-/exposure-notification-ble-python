@@ -8,3 +8,4 @@ class ENTxDataStore:
 
     def write(self, i, tek):
         self.tek_data_file.write("%d;%s\n" % (i, tek.hex()))
+        self.tek_data_file.flush()
