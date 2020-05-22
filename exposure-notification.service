@@ -1,0 +1,12 @@
+[Unit]
+Description=Exposure Notification Service
+After=multi-user.target
+
+[Service]
+Type=idle
+User=pi
+WorkingDirectory=/home/pi/exposure-notification-ble-python
+ExecStart=/usr/bin/python3 -u exposure-notification.py --cycletime 2 --scantime 2 --gpsdatetime --gpsposition
+
+[Install]
+WantedBy=multi-user.target

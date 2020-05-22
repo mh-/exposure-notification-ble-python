@@ -45,7 +45,7 @@ class ENBeacon(BlenoPrimaryService):
     def start(self):
         while not self.bleno.state == "poweredOn":
             pass  # Advertising must be started only after bleno is poweredOn.
-        print("BLE TX: Power is on, now starting to advertise...")
+        # print("BLE TX: Power is on, now starting to advertise...")
         self.start_advertising(self.uuid, self.rpi, self.aem)
 
     def stop(self):
