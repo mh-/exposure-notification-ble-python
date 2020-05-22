@@ -34,6 +34,9 @@ try:
     parser.add_argument("-t", "--triggertx",
                         help="trigger TX again after RX, if the Linux kernel wasn't patched to allow both in parallel",
                         action="store_true")
+    parser.add_argument("-n", "--notx",
+                        help="do not transmit RPI beacons via BLE",
+                        action="store_true")
     parser.add_argument("-r", "--storerawdata",
                         help="store raw RX data after every scan",
                         action="store_true")
@@ -49,6 +52,7 @@ try:
                         help="duration (in seconds) of the scanning within one cycle")
     args = parser.parse_args()
     trigger_tx = args.triggertx
+    tx_allowed = not args.notx
     store_raw_rx_data = args.storerawdata
     use_gps_date_time = args.gpsdatetime
     use_gps_position = args.gpsposition
@@ -57,6 +61,8 @@ try:
 
     log.log("Exposure Notification BLE Simulator")
     log.log("This script simulates an 'Exposure Notification V1.2'-enabled device.")
+    if not tx_allowed:
+        log.log("Warning: --notx option was selected: RPI beacons will not be transmitted.")
 
     gps_handler = None
     if use_gps_date_time or use_gps_position:
@@ -78,33 +84,34 @@ try:
             (sleep_time_seconds + num_scan_intervals * one_scan_interval_seconds,
              num_scan_intervals * one_scan_interval_seconds))
 
-    tx_data_store = ENTxDataStore("tek_data.csv")
     rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
                                   use_gps_position)
-
-    crypto = ENCrypto(interval_length_minutes=10, tek_rolling_period=144)
-
-    tx_service = ENTxService(bdaddr_rotation_interval_min_minutes=10, bdaddr_rotation_interval_max_minutes=20)
-    ble_advertising_tx_power_level = tx_service.get_advertising_tx_power_level()
     rx_service = ENRxService()
 
-    while True:
-        if crypto.tek_should_roll():
-            log.log("\nTX: TEK should roll...")
-            crypto.roll_tek()
-            tx_data_store.write(crypto.tek_roll_interval_i, crypto.tek)
-            crypto.derive_keys()
+    if tx_allowed:
+        tx_data_store = ENTxDataStore("tek_data.csv")
+        crypto = ENCrypto(interval_length_minutes=10, tek_rolling_period=144)
+        tx_service = ENTxService(bdaddr_rotation_interval_min_minutes=10, bdaddr_rotation_interval_max_minutes=20)
+        ble_advertising_tx_power_level = tx_service.get_advertising_tx_power_level()
 
-        if tx_service.bdaddr_should_roll():
-            log.log("\nTX: BDADDR should roll...")
-            tx_service.stop_beacon()
-            tx_service.roll_random_bdaddr()
-            # also create new RPI and encrypt metadata again:
-            crypto.encrypt_rpi()
-            crypto.encrypt_aem(metadata=[0x40, ble_advertising_tx_power_level, 0x00, 0x00], rpi=crypto.rpi)
-            tx_service.start_beacon(rpi=crypto.rpi, aem=crypto.aem)
-        elif trigger_tx:
-            tx_service.start_beacon(rpi=crypto.rpi, aem=crypto.aem)
+    while True:
+        if tx_allowed:
+            if crypto.tek_should_roll():
+                log.log("\nTX: TEK should roll...")
+                crypto.roll_tek()
+                tx_data_store.write(crypto.tek_roll_interval_i, crypto.tek)
+                crypto.derive_keys()
+
+            if tx_service.bdaddr_should_roll():
+                log.log("\nTX: BDADDR should roll...")
+                tx_service.stop_beacon()
+                tx_service.roll_random_bdaddr()
+                # also create new RPI and encrypt metadata again:
+                crypto.encrypt_rpi()
+                crypto.encrypt_aem(metadata=[0x40, ble_advertising_tx_power_level, 0x00, 0x00], rpi=crypto.rpi)
+                tx_service.start_beacon(rpi=crypto.rpi, aem=crypto.aem)
+            elif trigger_tx:
+                tx_service.start_beacon(rpi=crypto.rpi, aem=crypto.aem)
 
         for _ in range(sleep_time_seconds):
             # log.log(".", end='', flush=True)

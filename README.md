@@ -127,6 +127,10 @@ You can choose to have a raw RX data file created (`rx_raw_data.csv`) with optio
 
     $ python3 exposure-notification.py --storerawdata
     
+You can opt to _not_ advertise your own RPI beacons:
+
+      -n, --notx            do not transmit RPI beacons via BLE
+    
 If you have a GPS connected to the Raspberry Pi which is supported by gpsd, you can use these option:
 
       -d, --gpsdatetime     set date and time from GPS
