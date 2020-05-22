@@ -8,7 +8,8 @@ from gps_service import *
 import time
 import argparse
 import os
-
+from logger import *
+log = Logger()
 
 '''
 Exposure Notification BLE Simulator
@@ -54,15 +55,15 @@ try:
     total_scan_time_seconds = args.scantime
     total_cycle_time_seconds = max(args.cycletime, total_scan_time_seconds)
 
-    print("Exposure Notification BLE Simulator")
-    print("This script simulates an 'Exposure Notification V1.2'-enabled device.")
+    log.log("Exposure Notification BLE Simulator")
+    log.log("This script simulates an 'Exposure Notification V1.2'-enabled device.")
 
     gps_handler = None
     if use_gps_date_time or use_gps_position:
         gps_handler = GpsMessageHandler()
 
     if use_gps_date_time:
-        print("Waiting for time from GPS...")
+        log.log("\nWaiting for time from GPS...")
         date_time = gps_handler.get_date_time()
         while not date_time:
             time.sleep(0.5)
@@ -73,9 +74,9 @@ try:
     num_scan_intervals = -(-total_scan_time_seconds // one_scan_interval_seconds)  # ceil division
     sleep_time_seconds = max(total_cycle_time_seconds - num_scan_intervals * one_scan_interval_seconds, 0)
     rx_list_filter_time_seconds = 2 * total_cycle_time_seconds + 10
-    print("\nFull cycle duration: %ds, thereof scanning duration: %ds" %
-          (sleep_time_seconds + num_scan_intervals * one_scan_interval_seconds,
-           num_scan_intervals * one_scan_interval_seconds))
+    log.log("\nFull cycle duration: %ds, thereof scanning duration: %ds" %
+            (sleep_time_seconds + num_scan_intervals * one_scan_interval_seconds,
+             num_scan_intervals * one_scan_interval_seconds))
 
     tx_data_store = ENTxDataStore("tek_data.csv")
     rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
@@ -89,13 +90,13 @@ try:
 
     while True:
         if crypto.tek_should_roll():
-            print("\nTX: TEK should roll...")
+            log.log("\nTX: TEK should roll...")
             crypto.roll_tek()
             tx_data_store.write(crypto.tek_roll_interval_i, crypto.tek)
             crypto.derive_keys()
 
         if tx_service.bdaddr_should_roll():
-            print("\nTX: BDADDR should roll...")
+            log.log("\nTX: BDADDR should roll...")
             tx_service.stop_beacon()
             tx_service.roll_random_bdaddr()
             # also create new RPI and encrypt metadata again:
@@ -106,10 +107,10 @@ try:
             tx_service.start_beacon(rpi=crypto.rpi, aem=crypto.aem)
 
         for _ in range(sleep_time_seconds):
-            print(".", end='', flush=True)
+            # log.log(".", end='', flush=True)
             time.sleep(1)
 
-        print("\nBLE RX: Now scanning...")
+        log.log("\nBLE RX: Now scanning...")
 
         gps_lat = gps_lon = gps_altitude = gps_speed = None
         if use_gps_position:
@@ -124,6 +125,7 @@ try:
                 rx_data_store.write(beacon, timestamp,
                                     gps_lat=gps_lat, gps_lon=gps_lon, gps_altitude=gps_altitude, gps_speed=gps_speed)
         rx_data_store.filter_rx_list(timestamp)
+        # log.log("BLE RX: Stopped scanning.")
 
 except KeyboardInterrupt:
-    print("\nKeyboard Interrupt.")
+    log.log("\nKeyboard Interrupt.")

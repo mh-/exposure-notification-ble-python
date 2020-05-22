@@ -1,5 +1,7 @@
 import os, time
 from Crypto.Random import get_random_bytes, random
+from logger import *
+log = Logger()
 
 '''
 This class handles the BLE Beacon Transmission (TX).
@@ -47,9 +49,9 @@ class ENTxService:
             if os.system("python3 en_beacon.py %s %s %s" % (rpi.hex(), aem.hex(), self.random_bdaddr.hex())) == 0:
                 # return code 0 means: ok, advertising started.
                 break
-            print()
-            print("ERROR: Could not start advertising! Timestamp: %s" % time.strftime("%H:%M:%S", time.localtime()))
-            print()
+            log.log()
+            log.log("ERROR: Could not start advertising! Timestamp: %s" % time.strftime("%H:%M:%S", time.localtime()))
+            log.log()
             # try to recover:
             os.system("sudo hciconfig hci0 down; sudo hciconfig hci0 up")
             time.sleep(1)

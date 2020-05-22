@@ -1,5 +1,7 @@
 from bluepy import btle
 from bluepy.btle import ScanEntry
+from logger import *
+log = Logger()
 
 ''' 
 This class handles the BLE scanning.
@@ -20,7 +22,7 @@ class ENRxService:
         self.scanner = btle.Scanner(iface)
 
     def scan(self, t=1):
-        # print("BLE: scanning for Exposure Notification beacons (timeout: %ds)..." % t)
+        # log.log("BLE: scanning for Exposure Notification beacons (timeout: %ds)..." % t)
         scan_entries = self.scanner.scan(t)
         received_beacons = []
         for scan_entry in scan_entries:

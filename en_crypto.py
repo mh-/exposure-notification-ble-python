@@ -3,6 +3,8 @@ from Crypto.Hash import SHA256
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 import struct, time
+from logger import *
+log = Logger()
 
 
 class ENCrypto:
@@ -36,23 +38,23 @@ class ENCrypto:
         self.tek_roll_interval_i = (self.en_interval_number(self.get_current_unix_epoch_time_seconds())
                                     // self.tek_rolling_period) * self.tek_rolling_period
         self.tek = get_random_bytes(16)
-        print("CRYPTO: Rolled TEK at i: %d (hex %s). New TEK: %s" %
-              (self.tek_roll_interval_i, struct.pack("<I", self.tek_roll_interval_i).hex(), self.tek.hex()))
+        log.log("CRYPTO: Rolled TEK at i: %d (hex %s). New TEK: %s" %
+                (self.tek_roll_interval_i, struct.pack("<I", self.tek_roll_interval_i).hex(), self.tek.hex()))
 
     def derive_keys(self):
         self.rpik = HKDF(master=self.tek, key_len=16, salt=None, hashmod=SHA256, context="EN-RPIK".encode("UTF-8"))
-        print("CRYPTO: RPIK: %s" % self.rpik.hex())
+        log.log("CRYPTO: RPIK: %s" % self.rpik.hex())
         self.aemk = HKDF(master=self.tek, key_len=16, salt=None, hashmod=SHA256, context="EN-AEMK".encode("UTF-8"))
-        print("CRYPTO: AEMK: %s" % self.aemk.hex())
+        log.log("CRYPTO: AEMK: %s" % self.aemk.hex())
 
     def encrypt_rpi(self):
         enin = self.get_encoded_current_en_interval_number()
         padded_data = "EN-RPI".encode("UTF-8") + bytes([0x00] * 6) + enin
         cipher = AES.new(self.rpik, AES.MODE_ECB)
         self.rpi = cipher.encrypt(padded_data)
-        print("CRYPTO: padded data: %s --> RPI: %s" % (padded_data.hex(), self.rpi.hex()))
+        log.log("CRYPTO: padded data: %s --> RPI: %s" % (padded_data.hex(), self.rpi.hex()))
 
     def encrypt_aem(self, metadata, rpi):
         cipher = AES.new(self.aemk, AES.MODE_CTR, nonce=bytes(0), initial_value=rpi)
         self.aem = cipher.encrypt(bytes(metadata))
-        print("CRYPTO: metadata: %s --> AEM: %s" % (bytes(metadata).hex(), self.aem.hex()))
+        log.log("CRYPTO: metadata: %s --> AEM: %s" % (bytes(metadata).hex(), self.aem.hex()))

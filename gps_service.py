@@ -30,7 +30,6 @@ class GpsMessageHandler(threading.Thread):
         try:
             while True:
                 gps_data = self.gps_data.next()
-                # print(gps_data)
                 if gps_data:
                     if "time" in gps_data:
                         # get time from GPS, add "+0000" to import it as UTC

@@ -1,3 +1,7 @@
+from logger import *
+log = Logger()
+
+
 class ENRxDataStore:
     def __init__(self, rx_raw_data_file_name, rx_processed_data_filename, filter_time_seconds, store_raw_data,
                  store_gps_position):
@@ -61,9 +65,9 @@ class ENRxDataStore:
                                     (beacon_values[5], beacon_values[6], beacon_values[7], beacon_values[8]))
         self.rx_data_file.write("\n")
         self.rx_data_file.flush()
-        print("BLE RX: Beacon was received for %d seconds: RPI: %s, AEM: %s, max. RSSI: %d, BDADDR: %s" %
-              (beacon_values[4] - beacon_values[3], key.hex(), beacon_values[0].hex(), beacon_values[1],
-               beacon_values[2]))
+        log.log("BLE RX: Beacon was received for %d seconds: RPI: %s, AEM: %s, max. RSSI: %d, BDADDR: %s" %
+                (beacon_values[4] - beacon_values[3], key.hex(), beacon_values[0].hex(), beacon_values[1],
+                 beacon_values[2]))
 
     def write(self, beacon, current_timestamp, gps_lat=None, gps_lon=None, gps_altitude=None, gps_speed=None):
         if self.store_raw_data:
