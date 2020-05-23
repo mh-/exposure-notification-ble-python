@@ -13,7 +13,7 @@ and at the same time scans for them and records their contents and signal streng
 The purpose of this is research, particularly regarding the security & privacy implications 
 of this contact tracing concept, while the actual implementations on smart phones are not yet (publicly) available.
 
-I wrote down a few thoughts about the concept [here](some_thoughts_on_the_en_concept.md).
+I wrote down a few thoughts about the concept [here](doc/some_thoughts_on_the_en_concept.md).
 
 Usage Example
 -------------
@@ -80,7 +80,7 @@ I created a [__fork__](https://github.com/mh-/pybleno/tree/enhancements-for-expo
 to exactly mimic the Exposure Notification specification.
 - Because the out-of-the-box Raspberry Pi Linux bluez stack (kernel 4.19.97+) stops sending BLE beacons during BLE 
 scanning, which is somewhat sub-optimal for the use case and probably not the behavior of real smart phones, I created a
-[__kernel patch__](linux-kernel-patching.md). (Actually it's a dirty hack which has been only tested in this one 
+[__kernel patch__](doc/linux-kernel-patching.md). (Actually it's a dirty hack which has been only tested in this one 
 scenario - kernel 5.7 will probably solve this in a better way, but isn't tested on the Raspberry Pi platform yet). 
 If you prefer to keep your existing kernel, the script can also simply toggle between transmit-only and scan-only phases.
 
@@ -100,7 +100,7 @@ Installation and Running the Script
     $ # Give Bluetooth access to bluepy --> bluepy-helper 
     $ sudo setcap 'cap_net_raw,cap_net_admin+eip' /home/pi/.local/lib/python3.7/site-packages/bluepy/bluepy-helper
         
-If you modify the Linux kernel, as explained [here](linux-kernel-patching.md), you can run the script 
+If you modify the Linux kernel, as explained [here](doc/linux-kernel-patching.md), you can run the script 
 without special options:
 
     $ python3 exposure-notification.py

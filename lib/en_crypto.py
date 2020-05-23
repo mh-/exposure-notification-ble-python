@@ -3,7 +3,7 @@ from Crypto.Hash import SHA256
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 import struct, time
-from logger import *
+from lib.logger import *
 log = Logger()
 
 

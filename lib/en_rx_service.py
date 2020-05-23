@@ -1,6 +1,6 @@
 from bluepy import btle
 from bluepy.btle import ScanEntry
-from logger import *
+from lib.logger import *
 log = Logger()
 
 ''' 

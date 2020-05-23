@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-from en_tx_service import *
-from en_tx_data_store import *
-from en_rx_service import *
-from en_rx_data_store import *
-from en_crypto import *
-from gps_service import *
+from lib.en_tx_service import *
+from lib.en_tx_data_store import *
+from lib.en_rx_service import *
+from lib.en_rx_data_store import *
+from lib.en_crypto import *
+from lib.gps_service import *
 import time
 import argparse
 import os
-from logger import *
+from lib.logger import *
 log = Logger()
 
 '''
@@ -84,12 +84,12 @@ try:
             (sleep_time_seconds + num_scan_intervals * one_scan_interval_seconds,
              num_scan_intervals * one_scan_interval_seconds))
 
-    rx_data_store = ENRxDataStore("rx_raw_data.csv", "rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
+    rx_data_store = ENRxDataStore("output/rx_raw_data.csv", "output/rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
                                   use_gps_position)
     rx_service = ENRxService()
 
     if tx_allowed:
-        tx_data_store = ENTxDataStore("tek_data.csv")
+        tx_data_store = ENTxDataStore("output/tek_data.csv")
         crypto = ENCrypto(interval_length_minutes=10, tek_rolling_period=144)
         tx_service = ENTxService(bdaddr_rotation_interval_min_minutes=10, bdaddr_rotation_interval_max_minutes=20)
         ble_advertising_tx_power_level = tx_service.get_advertising_tx_power_level()

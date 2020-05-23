@@ -77,7 +77,7 @@ If you feel comfortable applying this hack to a Raspberry Pi setup, here's what 
 For Raspbian Buster, this shows the kernel version `4.19.97-v7+`.  
 The corresponding git repo is located here <https://github.com/raspberrypi/linux/tree/rpi-4.19.y>, you can clone it with
 `git clone --depth=1 --branch rpi-4.19.y https://github.com/raspberrypi/linux`
-2. __Apply the [patch](linux/keep_ble_advertising_on_when_scanning.patch):__  
+2. __Apply the [patch](../linux-ble-patch/keep_ble_advertising_on_when_scanning.patch):__  
 `patch -p0 < keep_ble_advertising_on_when_scanning.patch`
 3. Build the kernel as explained in the tutorial. This will take some time.
 4. Deploy the kernel to the Raspberry Pi's SD card.

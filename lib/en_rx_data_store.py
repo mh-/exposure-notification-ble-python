@@ -1,4 +1,4 @@
-from logger import *
+from lib.logger import *
 log = Logger()
 
 
