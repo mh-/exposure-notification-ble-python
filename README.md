@@ -142,10 +142,11 @@ Running the Script at Startup
 If you want to run the script every time the Raspberry Pi starts up, you can e.g. make __systemd__ run the script
 when the boot sequence has finished (and Bluetooth has been activated).
 
-There's a sample Service Unit file in this repo: `exposure-notification.service`. Modify this with the command line
+There's a sample Service Unit file in this repo: 
+[exposure-notification.service](linux-startup/exposure-notification.service). Modify this with the command line
 parameters you need and then: 
 
-    $ sudo cp exposure-notification.service /lib/systemd/system/
+    $ sudo cp linux-startup/exposure-notification.service /lib/systemd/system/
     $ sudo chmod 644 /lib/systemd/system/exposure-notification.service
     $ sudo systemctl daemon-reload
     $ sudo systemctl enable exposure-notification.service

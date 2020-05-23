@@ -84,8 +84,8 @@ try:
             (sleep_time_seconds + num_scan_intervals * one_scan_interval_seconds,
              num_scan_intervals * one_scan_interval_seconds))
 
-    rx_data_store = ENRxDataStore("output/rx_raw_data.csv", "output/rx_data.csv", rx_list_filter_time_seconds, store_raw_rx_data,
-                                  use_gps_position)
+    rx_data_store = ENRxDataStore("output/rx_raw_data.csv", "output/rx_data.csv", rx_list_filter_time_seconds,
+                                  store_raw_rx_data, use_gps_position)
     rx_service = ENRxService()
 
     if tx_allowed:
