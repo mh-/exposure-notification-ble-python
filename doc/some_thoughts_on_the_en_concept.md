@@ -37,7 +37,9 @@ Another [concern](https://github.com/corona-warn-app/cwa-documentation/issues/76
 third party apps or services could use BLE scanning to do the same as an official COVID-19 warning app - even on devices
 where that warning app is not installed -  and could thus make the same estimations about the user's exposure status (using 
 Diagnosis Keys downloaded from official sources). Therefore it would be better if Android filtered out 0xFD6F beacons from 
-"normal" BLE scanning responses, unless the user specifically allows this.
+"normal" BLE scanning responses, unless the user specifically allows this. 
+Apple seems to have introduced this behavior with iOS 13.5 - the 0xFD6F payload is not reported to "normal" apps anymore
+during BLE scanning.
 
 Cryptography on BLE
 -------------------
