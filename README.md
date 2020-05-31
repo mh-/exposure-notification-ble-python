@@ -84,8 +84,8 @@ scanning, which is somewhat sub-optimal for the use case and probably not the be
 scenario - kernel 5.7 will probably solve this in a better way, but isn't tested on the Raspberry Pi platform yet). 
 If you prefer to keep your existing kernel, the script can also simply toggle between transmit-only and scan-only phases.
 
-Installation and Running the Script
------------------------------------
+Installation
+------------
 
     $ git clone https://github.com/mh-/exposure-notification-ble-python
     $ cd exposure-notification-ble-python
@@ -100,16 +100,24 @@ Installation and Running the Script
     $ # Give Bluetooth access to bluepy --> bluepy-helper 
     $ sudo setcap 'cap_net_raw,cap_net_admin+eip' /home/pi/.local/lib/python3.7/site-packages/bluepy/bluepy-helper
         
-If you modify the Linux kernel, as explained [here](doc/linux-kernel-patching.md), you can run the script 
-without special options:
+Running the Script
+------------------
+
+There are two variants:
+
+a) If you modify the Linux kernel, as explained [here](doc/linux-kernel-patching.md), you can run the script 
+without parameters:
 
     $ python3 exposure-notification.py
     
-With the original Linux kernel, advertising the beacon (TX) is disabled by scanning (RX), 
-and you need use the --triggertx option:
+b) With the original Linux kernel, advertising the beacon (TX) will be disabled by each scanning (RX), 
+and you need use the `--triggertx` option:
 
     $ python3 exposure-notification.py --triggertx
     
+
+Other options:
+
 You can set the duration of a cycle, and the duration of scanning within a cycle, with these options:
 
       -c CYCLETIME, --cycletime CYCLETIME
@@ -131,7 +139,7 @@ You can opt to _not_ advertise your own RPI beacons:
 
       -n, --notx            do not transmit RPI beacons via BLE
     
-If you have a GPS connected to the Raspberry Pi which is supported by gpsd, you can use these option:
+If you have a GPS connected to the Raspberry Pi which is supported by gpsd, you can use these options:
 
       -d, --gpsdatetime     set date and time from GPS
       -g, --gpsposition     store GPS position with RX data
