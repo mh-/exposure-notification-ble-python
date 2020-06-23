@@ -41,6 +41,20 @@ Diagnosis Keys downloaded from official sources). Therefore it would be better i
 Apple seems to have introduced this behavior with iOS 13.5 - the 0xFD6F payload is not reported to "normal" apps anymore
 during BLE scanning.
 
+Also, the non-linkability of published Diagnosis Keys across multiple days only works in geographic regions where 
+_many users_ report Diagnosis Keys. Otherwise, if only one user reports within a small geographic area, an attacker can link 
+the received RPIs across multiple days simply based on the geolocation where they were received. 
+In Germany, the fixed distribution of Transmission Risk Levels over the age of the reported Diagnosis Keys 
+(see ["Epidemiological Motivation of the Transmission Risk Level"](https://github.com/corona-warn-app/cwa-documentation/blob/master/transmission_risk.pdf)
+(only case 4 is used at the moment, see also [here](https://github.com/corona-warn-app/cwa-app-android/issues/678))
+also further helps to link Diagnosis Keys in this scenario.
+During the ramp-up phase in the week after the first [app publication in Germany](https://www.coronawarn.app/), 
+it turned out that the backend did not distribute any Diagnosis Keys at all, presumably because a threshold of 140 keys 
+had not been reached, see e.g. [here](https://github.com/corona-warn-app/cwa-backlog/issues/2#issuecomment-647088679). 
+This threshold however means max. ~70 users (if each one has already 2 keys to report), and seems to be completely arbitrary 
+and useless, because these users are likely spread all over Germany, and each one could be tracked across both days
+simply based on the locations where the RPIs were recorded.
+
 Cryptography on BLE
 -------------------
 
